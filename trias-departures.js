@@ -1,18 +1,10 @@
 module.exports = function(RED) {
-    function OnkyoRiDevice(config) {
-
-        
-        //const devices = fs.readdirSync("./resources/");
-        
-     
-        // const devNames = devices.map( device => device.substr(0, device.lastIndexOf(".")))
+    function TriasDepatures(config) {
 
 
         RED.nodes.createNode(this,config);
         var node = this;
 
-        
-        
         node.on('input', function(msg) {
             //const select= $("#node-input-device");    
             //node.error("HalloIchBinFehler... "+select);
@@ -21,7 +13,7 @@ module.exports = function(RED) {
             node.send(msg);
         });
     }
-    RED.nodes.registerType("onkyo-ri-device",OnkyoRiDevice);
+    RED.nodes.registerType("trias-departures",TriasDepatures);
 
 
     

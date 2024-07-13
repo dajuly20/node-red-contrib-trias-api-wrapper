@@ -1,0 +1,23 @@
+<script type="text/javascript">
+    RED.nodes.registerType('triasconfig',{
+        category: 'config',
+        defaults: {
+            endpointuri: {value:"",required:true},
+            requestorref: {value:"",required:true},
+        },
+        label: function() {
+            return this.endpointuri+":"+this.requestortef;
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="triasconfig">
+    <div class="form-row">
+        <label for="node-config-input-endpointuri"><i class="fa fa-bookmark"></i>Trias API Uri</label>
+        <input type="text" id="node-config-input-endpointuri" placeholder="http://efa-bw.de/trias">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-requestorref"><i class="fa fa-bookmark"></i> RequestorRef (API-Key)</label>
+        <input type="text" id="node-config-input-requestorref" placeholder="Requestor Reference code (API-Key)">
+    </div>
+</script>

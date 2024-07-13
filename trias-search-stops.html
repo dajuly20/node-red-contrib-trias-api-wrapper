@@ -1,0 +1,62 @@
+<script type="text/javascript">
+  RED.nodes.registerType("trias-search-stops", {
+    category: "common",
+    paletteLabel: "Trias search stops",
+    color: "#a6bbcf",
+    defaults: {
+      con: { value: "", type: "triasconfig" },
+      searchstring: { value: "" },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "file.png",
+    label: function () {
+      return this.name || "trias-search-stops";
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="trias-search-stops">
+
+<div class="form-row">
+    <label for="node-input-con"><i class="fa fa-tag"></i> TRIAS configuration</label>
+    <input type="text" id="node-input-con">
+</div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-searchstring"><i class="fa fa-tag"></i>Stop name</label>
+    <input type="text" id="node-input-searchstring" placeholder="Uses msg.payload if left empty" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="search-stops">
+  <p>
+    Node will send it's <code>msg.payload</code> as commands over a
+    
+   
+
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt class="optional">
+      topic <small>(optional)</small><span class="property-type">numeric</span>
+    </dt>
+    <dd>
+      Overrides the searchstring Pin defined in the node using <b>WiringPi Schema</b
+      ><br />What I use: <code>27</code> <br />
+    </dd>
+    <dt>
+      payload
+      <span class="property-type">string</span>
+    </dt>
+    <dd>
+      The code(s) that get sent via Onkyo Ri. A "complete" list can be found
+      here:
+     
+      Example value: <code>0x20</code> (Source to CD on some Hardware)
+    </dd>
+
+ 
+</script>
