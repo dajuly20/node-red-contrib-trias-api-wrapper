@@ -5,9 +5,9 @@
         inputs: 1,
         outputs: 1,
         defaults: {
-            conf: { value: "", type: "triasconfig" },
             name: { value: "" },
-
+            con: { value: "", type: "triasconfig" },
+            stoppointref: { value: "" },
         },
         icon: "file.png",
         label: function () {
@@ -21,16 +21,16 @@
 
 <script type="text/html" data-template-name="trias-departures">
     <div class="form-row">
-        <label for="node-input-conf"><i class="fa fa-tag"></i> TRIAS configuration</label>
-        <input type="text" id="node-input-conf">
+        <label for="node-input-con"><i class="fa fa-tag"></i> TRIAS configuration</label>
+        <input type="text" id="node-input-con">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-stopPointRef"><i class="fa fa-tag"></i>Stop ID / StopPointRef</label>
-        <input type="text" id="node-input-stopPointRef" placeholder="Uses msg.payload if left empty">
+        <label for="node-input-stoppointref"><i class="fa fa-tag"></i>Stop ID / StopPointRef</label>
+        <input type="text" id="node-input-stoppointref" placeholder="Uses msg.payload if left empty">
 </script>
 
 <script type="text/html" data-help-name="trias-departures">
