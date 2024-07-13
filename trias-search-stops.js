@@ -28,7 +28,7 @@ module.exports = function (RED) {
 
 
 
-        const finalSearchString = payload; // TODO: Check for override
+        const finalSearchString = config.searchstring != "" ?  config.searchstring :  msg.payload; 
 
       var client = trias.getClient({
           url: this.con.endpointuri,
@@ -39,8 +39,12 @@ module.exports = function (RED) {
           name: finalSearchString
       });
           
-      //this.status({fill:"green",shape:"ring",text:"disconnected"});
-      node.send({con: this.con, config, requestorref: this.con.requestorref, endpointuri: this.con.endpointuri, oldPayload: payload, payload: stopsResult.stops});
+      const dbgObj = {con: this.con, config, requestorref: this.con.requestorref, endpointuri: this.con.endpointuri, oldPayload: payload}
+      const fill = (stopsResult.stops.length == 0) ? "red" : "green";
+      this.status({fill,shape:"ring", text: stopsResult.stops.length + " stops found"});
+
+
+      node.send({dbgObj, topic: finalSearchString, payload: stopsResult.stops});
         
       });
     } catch (e) {
