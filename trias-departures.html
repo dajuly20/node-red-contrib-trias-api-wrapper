@@ -9,9 +9,9 @@
             con: { value: "", type: "triasconfig" },
             stoppointref: { value: "" },
         },
-        icon: "file.png",
+        icon: "H.svg",
         label: function () {
-            return this.name || "trias-departures";
+            return this.name || "Bus/Bahn Abfahrszeiten";
         }
         
 
@@ -28,27 +28,29 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-stoppointref"><i class="fa fa-tag"></i>Stop ID / StopPointRef</label>
+        <label for="node-input-stoppointref"><i class="fa fa-tag"></i>StationID / StopPointRef</label>
         <input type="text" id="node-input-stoppointref" placeholder="Uses msg.payload if left empty">
 </script>
 
 <script type="text/markdown" data-help-name="trias-departures">
-Connects to a MQTT broker and publishes messages.
+Wrapper for trias-client to get the current leaving times for a station.
 
 ### Inputs
 
-: payload (string | buffer) :  the stationID for the request.
+: payload (string | buffer) :  the StationID of the Station you want departure times for.
 
 ### Outputs
 
 1. Standard output
-: payload (array) : array of current leaving times for the requested stationID.
+: payload (array) : Array of departure times for given StationID.
 
 ### Details
 
-`msg.payload` can be overridden by the 
+`msg.payload` can be overridden by the property `StationID`
+The StationID can be found using the Station Node (or just connect the Station Node to the Departure Node)
+TRIAS calls this property `StopPointRef`
 ### References
 
-    - https://github.com/public-transport/ideas/issues/18
-    - https://github.com/andaryjo/trias-client
-</script>
+https://github.com/public-transport/ideas/issues/18 TRIAS Api Endpoints there are, and how to get access)
+https://github.com/andaryjo/trias-client Trias Client 
+</script>StopPointRef

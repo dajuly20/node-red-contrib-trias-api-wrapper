@@ -10,9 +10,9 @@
     },
     inputs: 1,
     outputs: 1,
-    icon: "file.png",
+    icon: "H.svg",
     label: function () {
-      return this.name || "trias-search-stops";
+      return this.name || "Bus/Bahn Haltestellen";
     },
   });
 </script>
@@ -33,20 +33,20 @@
   </div>
 </script>
 <script type="text/markdown" data-help-name="trias-search-stops">
-  Connects to a MQTT broker and publishes messages.
+Wrapper for trias-client to search for stations.
   
   ### Inputs
   
-  : payload (string | buffer) :  the string to search a station.
+  : payload (string | buffer) :  the name of a Station to look for.
   
   ### Outputs
   
   1. Standard output
-  : payload (array) : array of stations matching the seaech.
+  : payload (array) : array of stations matching the search.
   
   ### Details
   
-  `msg.payload` can be overridden by the property `searchstring`.
+  `msg.payload` can be overridden by the property `Station name`.
   ### References
   
       - https://github.com/public-transport/ideas/issues/18
