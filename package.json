@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-trias-client",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Wrapper for trias-client",
   "main": "trias-search-stops.js",
   "dependencies": {
@@ -14,6 +14,13 @@
     "node-red",
     "trias",
     "oeffi",
+    "bus",
+    "tram",
+    "departure",
+    "strassenbahn",
+    "abfahrszeiten",
+    "zug",
+    "train",
     "public transport"
   ],
   "author": "Julian Wiche",
