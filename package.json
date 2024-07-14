@@ -11,6 +11,7 @@
     "url": "git+https://github.com/dajuly20/node-red-contrib-trias-api-wrapper.git"
   },
   "keywords": [
+    "node-red",
     "trias",
     "oeffi",
     "public transport"
