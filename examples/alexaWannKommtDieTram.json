@@ -1,0 +1,377 @@
+[
+    {
+        "id": "5fdc807ddace5f0b",
+        "type": "group",
+        "z": "a48181eb689b7de6",
+        "name": "Alexa wann kommt die TRAM?",
+        "style": {
+            "fill": "#addb7b",
+            "label": true
+        },
+        "nodes": [
+            "bd28cb191cfb173a",
+            "764a37157cc15109",
+            "85db9b2d94b847c8",
+            "b3792b3b194b2c0f",
+            "1290f2d107c7a2f5",
+            "c7b94c179de5f4c0",
+            "6ee9a785261a181e",
+            "6ffdfc54ce351616",
+            "755c3bd8c2958184",
+            "44b66d2bbd48aff4",
+            "810c63b83a38167d",
+            "34582341aedaf765",
+            "1a0b6a85be84de23"
+        ],
+        "x": 274,
+        "y": 1655,
+        "w": 1512,
+        "h": 306
+    },
+    {
+        "id": "bd28cb191cfb173a",
+        "type": "amazon-echo-hub",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "port": "8008",
+        "processinput": "2",
+        "discovery": true,
+        "x": 390,
+        "y": 1720,
+        "wires": [
+            [
+                "44b66d2bbd48aff4"
+            ]
+        ]
+    },
+    {
+        "id": "764a37157cc15109",
+        "type": "trias-departures",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "name": "Tram 3 => Haid",
+        "con": "05db78c25edac88f",
+        "stoppointref": "de:08311:30415",
+        "x": 1120,
+        "y": 1720,
+        "wires": [
+            [
+                "1290f2d107c7a2f5"
+            ]
+        ]
+    },
+    {
+        "id": "85db9b2d94b847c8",
+        "type": "inject",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 420,
+        "y": 1760,
+        "wires": [
+            [
+                "755c3bd8c2958184"
+            ]
+        ]
+    },
+    {
+        "id": "b3792b3b194b2c0f",
+        "type": "alexa-remote-routine",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "name": "",
+        "account": "bcf2465275d25752",
+        "routineNode": {
+            "type": "speak",
+            "payload": {
+                "type": "regular",
+                "text": {
+                    "type": "msg",
+                    "value": "textToSpeech"
+                },
+                "devices": [
+                    "G091EV0810450DWQ"
+                ]
+            }
+        },
+        "x": 1360,
+        "y": 1880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1290f2d107c7a2f5",
+        "type": "function",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "name": "filter for the right tram, direction and none in the past",
+        "func": "// Luxon is sneaked in with this node ;-) \n// Filtering should be improved and tested - no guarantees - I was tired \n// Who finds errors can keep them (and PR) - or share them so I can have a look \n\nconst DateTime = luxon.DateTime;\nconst filterFor = msg.destination;\nconst onlyFutureDepartures = msg.payload.filter(aDep => {\n  const dep = Date.parse(aDep.departure);\n  const now = Date.now();\n  return now < dep; \n\n});\n\nconst filteredDepartures = filterFor ? onlyFutureDepartures : onlyFutureDepartures.filter(aDep => aDep.direction == filterFor);\nconst options = {\n  weekday: 'long',\n  year: 'numeric',\n  month: 'long',\n  day: 'numeric',\n};\nconst enrichtedDepartures = filteredDepartures.map(obj => {\n\n  const depTimestamp = Date.parse(obj.departure);\n  const depDatetime = new Date(depTimestamp);\n  const depLocaleString = depDatetime.toLocaleTimeString('de-DE');\n  const delayString = !obj.depatureDelay ? \"Pünktlich\" : obj.depatureDelay+ \"  min Verspätung\";\n  const now = DateTime.now();\n  const lux = DateTime.fromISO(obj.departure, { zone: \"Europe/Berlin\" });\n  const lDiff = lux.diff(now);\n  const diffSec = parseInt(lDiff.toFormat(\"ss\"));\n  const diffTTS = lDiff.toFormat(\"m 'Minuten und ' s 'Sekunden'\");\n  const diff = lDiff.toFormat(\"mm:ss\");\n  const walkTimeSec = msg.walkingTimeMins * 60;\n  const isReachableForWalkingTime = diffSec > walkTimeSec; \n\n  return { ...obj, diffTTS, isReachableForWalkingTime, diffSec, delayString, diff, lux, depLocaleString, depTimestamp, departureDateTime: depDatetime }\n})\n\nmsg.oP = msg.payload;\nmsg.payload = enrichtedDepartures;\n\nnode.error(msg)\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "luxon",
+                "module": "luxon"
+            }
+        ],
+        "x": 1460,
+        "y": 1720,
+        "wires": [
+            [
+                "1a0b6a85be84de23"
+            ]
+        ]
+    },
+    {
+        "id": "c7b94c179de5f4c0",
+        "type": "change",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "name": "1. entry of departure array",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "msg.payload[0]",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 850,
+        "y": 1880,
+        "wires": [
+            [
+                "6ffdfc54ce351616"
+            ]
+        ]
+    },
+    {
+        "id": "6ee9a785261a181e",
+        "type": "change",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "name": "Save next departure in flow",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "msg.payload[1]",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "nextTramTime",
+                "pt": "flow",
+                "to": "msg.payload.depLocaleString&' Uhr'",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 1920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6ffdfc54ce351616",
+        "type": "change",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "name": "set color & text",
+        "rules": [
+            {
+                "t": "set",
+                "p": "nextTramTime",
+                "pt": "msg",
+                "to": "nextTramTime",
+                "tot": "flow",
+                "dc": true
+            },
+            {
+                "t": "set",
+                "p": "textToSpeech",
+                "pt": "msg",
+                "to": "'Nächste Strassenbahn Linie 3 Richtung Haid kommt in '\t& msg.payload.diffTTS \t& \t( msg.payload.isReachableForWalkingTime \t    ? \"Du hast genug Zeit um die Bahn zu erreichen! \" \t    : (\" Das wird leider zu knapp! Die nächste Bahn kommt um \" & msg.nextTramTime )) ",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1140,
+        "y": 1880,
+        "wires": [
+            [
+                "b3792b3b194b2c0f"
+            ]
+        ]
+    },
+    {
+        "id": "755c3bd8c2958184",
+        "type": "change",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "name": "Set Station Name \\n the time needed to reach the station \\n and a filter for the destionation",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Weddigenstr",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "destination",
+                "pt": "msg",
+                "to": "Haid",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "walkingTimeMins",
+                "pt": "msg",
+                "to": "6",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 1720,
+        "wires": [
+            [
+                "764a37157cc15109"
+            ]
+        ]
+    },
+    {
+        "id": "44b66d2bbd48aff4",
+        "type": "amazon-echo-device",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "name": "trias",
+        "topic": "trias",
+        "x": 590,
+        "y": 1720,
+        "wires": [
+            [
+                "755c3bd8c2958184"
+            ]
+        ]
+    },
+    {
+        "id": "810c63b83a38167d",
+        "type": "delay",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "200",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 540,
+        "y": 1880,
+        "wires": [
+            [
+                "c7b94c179de5f4c0"
+            ]
+        ]
+    },
+    {
+        "id": "34582341aedaf765",
+        "type": "junction",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "x": 380,
+        "y": 1920,
+        "wires": [
+            [
+                "810c63b83a38167d",
+                "6ee9a785261a181e"
+            ]
+        ]
+    },
+    {
+        "id": "1a0b6a85be84de23",
+        "type": "junction",
+        "z": "a48181eb689b7de6",
+        "g": "5fdc807ddace5f0b",
+        "x": 1760,
+        "y": 1920,
+        "wires": [
+            [
+                "34582341aedaf765"
+            ]
+        ]
+    },
+    {
+        "id": "05db78c25edac88f",
+        "type": "triasconfig",
+        "endpointuri": "http://efa-bw.de/trias",
+        "requestorref": "JuLiaN_WiCHe"
+    },
+    {
+        "id": "bcf2465275d25752",
+        "type": "alexa-remote-account",
+        "name": "Julians Amazon account",
+        "authMethod": "proxy",
+        "proxyOwnIp": "192.168.188.2",
+        "proxyPort": "3456",
+        "cookieFile": "./.node-red/alexaAuth.conf",
+        "refreshInterval": "3",
+        "alexaServiceHost": "layla.amazon.de",
+        "pushDispatchHost": "",
+        "amazonPage": "amazon.de",
+        "acceptLanguage": "de-DE",
+        "onKeywordInLanguage": "on",
+        "userAgent": "",
+        "usePushConnection": "on",
+        "autoInit": "on",
+        "autoQueryActivityOnTrigger": "on"
+    }
+]

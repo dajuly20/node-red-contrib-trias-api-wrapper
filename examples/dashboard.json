@@ -1,0 +1,476 @@
+[
+    {
+        "id": "77edf44110be5ee7",
+        "type": "inject",
+        "z": "416d96898d451604",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "Weddigenstr",
+        "payloadType": "str",
+        "x": 250,
+        "y": 180,
+        "wires": [
+            [
+                "1e118e6b08720398"
+            ]
+        ]
+    },
+    {
+        "id": "4020429f46524a95",
+        "type": "debug",
+        "z": "416d96898d451604",
+        "name": "Search Stop",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 730,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "1e118e6b08720398",
+        "type": "trias-search-stops",
+        "z": "416d96898d451604",
+        "name": "",
+        "con": "5279860f9847c164",
+        "searchstring": "",
+        "x": 490,
+        "y": 180,
+        "wires": [
+            [
+                "4020429f46524a95",
+                "4cf580a75270e91a"
+            ]
+        ]
+    },
+    {
+        "id": "a39979a4ae89a44d",
+        "type": "inject",
+        "z": "416d96898d451604",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "destination",
+                "v": "Haid",
+                "vt": "str"
+            },
+            {
+                "p": "walkingTimeMins",
+                "v": "6",
+                "vt": "num"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "5",
+        "topic": "Tram 3 Haid ",
+        "payload": "de:08311:30415",
+        "payloadType": "str",
+        "x": 170,
+        "y": 300,
+        "wires": [
+            [
+                "4cf580a75270e91a"
+            ]
+        ]
+    },
+    {
+        "id": "5e6c6908cac2445f",
+        "type": "debug",
+        "z": "416d96898d451604",
+        "name": "Departures ",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1450,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "4cf580a75270e91a",
+        "type": "trias-departures",
+        "z": "416d96898d451604",
+        "name": "",
+        "con": "5279860f9847c164",
+        "stoppointref": "",
+        "x": 480,
+        "y": 300,
+        "wires": [
+            [
+                "9353f928388a257d"
+            ]
+        ]
+    },
+    {
+        "id": "9353f928388a257d",
+        "type": "function",
+        "z": "416d96898d451604",
+        "name": "filter for the right tram, direction and none in the past",
+        "func": "\nconst DateTime = luxon.DateTime;\nconst filterFor = msg.destination;\n\nconst onlyFutureDepartures = msg.payload.filter(aDep => {\n  const dep = Date.parse(aDep.departure);\n  const now = Date.now();\n  return now < dep; \n\n});\n\nconst filteredDepartures = onlyFutureDepartures.filter(aDep => aDep.direction == filterFor);\nconst options = {\n  weekday: 'long',\n  year: 'numeric',\n  month: 'long',\n  day: 'numeric',\n};\nconst enrichtedDepartures = filteredDepartures.map(obj => {\n\n  const depTimestamp = Date.parse(obj.departure);\n  const depDatetime = new Date(depTimestamp);\n  const depLocaleString = depDatetime.toLocaleTimeString('de-DE');\n  const delayString = !obj.depatureDelay ? \"Pünktlich\" : obj.depatureDelay+ \"  min Verspätung\";\n  const now = DateTime.now();\n  const lux = DateTime.fromISO(obj.departure, { zone: \"Europe/Berlin\" });\n  const lDiff = lux.diff(now);\n  const diffSec = parseInt(lDiff.toFormat(\"ss\"));\n  const diff = lDiff.toFormat(\"mm:ss\");\n  const walkTimeSec = msg.walkingTimeMins * 60;\n  const isReachableForWalkingTime = diffSec > walkTimeSec; \n\n  return { ...obj, isReachableForWalkingTime, diffSec, delayString, diff, lux, depLocaleString, depTimestamp, departureDateTime: depDatetime }\n})\n\nmsg.oP = msg.payload;\nmsg.payload = enrichtedDepartures;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "luxon",
+                "module": "luxon"
+            }
+        ],
+        "x": 840,
+        "y": 300,
+        "wires": [
+            [
+                "96a7068451f5045a",
+                "2a8b1e5c58d5845f"
+            ]
+        ]
+    },
+    {
+        "id": "0c1e2461f5a7fbe3",
+        "type": "ui_text",
+        "z": "416d96898d451604",
+        "group": "02f3aa4d7f2627de",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "Arrival time",
+        "label": "Abfahrt:",
+        "format": "{{msg.payload.depLocaleString}} Uhr",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1450,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "96a7068451f5045a",
+        "type": "change",
+        "z": "416d96898d451604",
+        "name": "1. entry of departure array",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "msg.payload[0]",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1210,
+        "y": 300,
+        "wires": [
+            [
+                "0c1e2461f5a7fbe3",
+                "c27d859ed768db09",
+                "21538d946e755e9f",
+                "27bd7f2c1068c8b4",
+                "1e8845e2ab74ff73",
+                "5e6c6908cac2445f"
+            ]
+        ]
+    },
+    {
+        "id": "c27d859ed768db09",
+        "type": "ui_text",
+        "z": "416d96898d451604",
+        "group": "02f3aa4d7f2627de",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "Time difference",
+        "label": "Verbleibend:",
+        "format": "{{msg.payload.diff}} Minuten",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1460,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "872b1d71.45076",
+        "type": "ui_text",
+        "z": "416d96898d451604",
+        "group": "02f3aa4d7f2627de",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "name": "Delay",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload.delayString}} <font color={{msg.color}} ><i class=\"fa fa-circle\" style=\"font-size:24px;\"></i></font>",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1650,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "21538d946e755e9f",
+        "type": "change",
+        "z": "416d96898d451604",
+        "name": "set color",
+        "rules": [
+            {
+                "t": "set",
+                "p": "color",
+                "pt": "msg",
+                "to": "msg.departureDelay != 0 ? \"red\" : \"green\"",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1440,
+        "y": 360,
+        "wires": [
+            [
+                "872b1d71.45076"
+            ]
+        ]
+    },
+    {
+        "id": "27bd7f2c1068c8b4",
+        "type": "ui_text",
+        "z": "416d96898d451604",
+        "group": "02f3aa4d7f2627de",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Details:",
+        "format": "Line: {{msg.payload.line.line}} Type: {{msg.payload.mode}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1440,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "f1d2a99c6ffe0951",
+        "type": "ui_text",
+        "z": "416d96898d451604",
+        "group": "02f3aa4d7f2627de",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "name": "Reachable",
+        "label": "Bahn {{msg.message}} ",
+        "format": "Abf in: {{msg.payload.diff}}  <font color={{msg.color}} ><i class=\"fa fa-circle\" style=\"font-size:24px;\"></i></font>",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1670,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "1e8845e2ab74ff73",
+        "type": "change",
+        "z": "416d96898d451604",
+        "name": "set color & text",
+        "rules": [
+            {
+                "t": "set",
+                "p": "color",
+                "pt": "msg",
+                "to": "msg.payload.isReachableForWalkingTime ? \"green\" : \"red\"",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "message",
+                "pt": "msg",
+                "to": "msg.payload.isReachableForWalkingTime ? \"ist ERREICHBAR 😀\" : \"NICHT erreichbar ☹️\"",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1460,
+        "y": 300,
+        "wires": [
+            [
+                "f1d2a99c6ffe0951"
+            ]
+        ]
+    },
+    {
+        "id": "2a8b1e5c58d5845f",
+        "type": "change",
+        "z": "416d96898d451604",
+        "name": "1. entry of departure array",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "msg.payload[1]",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1230,
+        "y": 640,
+        "wires": [
+            [
+                "2b8184793874c61b",
+                "f06013f64968df48",
+                "786bd63dac23951e"
+            ]
+        ]
+    },
+    {
+        "id": "f06013f64968df48",
+        "type": "ui_text",
+        "z": "416d96898d451604",
+        "group": "02f3aa4d7f2627de",
+        "order": 8,
+        "width": 0,
+        "height": 0,
+        "name": "Time difference",
+        "label": "Verbleibend:",
+        "format": "{{msg.payload.diff}} Minuten",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1460,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "2b8184793874c61b",
+        "type": "ui_text",
+        "z": "416d96898d451604",
+        "group": "02f3aa4d7f2627de",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "name": "Arrival time",
+        "label": "Abfahrt:",
+        "format": "{{msg.payload.depLocaleString}} Uhr",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1450,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "786bd63dac23951e",
+        "type": "ui_text",
+        "z": "416d96898d451604",
+        "group": "02f3aa4d7f2627de",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Nächste Tram:",
+        "format": "",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1460,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "5279860f9847c164",
+        "type": "triasconfig",
+        "endpointuri": "http://efa-bw.de/trias",
+        "requestorref": "JuLiaN_WiCHe"
+    },
+    {
+        "id": "02f3aa4d7f2627de",
+        "type": "ui_group",
+        "name": "Nächste Abfahrt Haltestelle Weddigenstrasse Richtung Haid",
+        "tab": "77d2ae3ac2a7a33b",
+        "order": 1,
+        "disp": true,
+        "width": "11",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "77d2ae3ac2a7a33b",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
