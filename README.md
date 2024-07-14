@@ -13,3 +13,7 @@ https://github.com/public-transport/ideas/issues/18 TRIAS Api Endpoints & where 
 * Including a worklow to asl Alexa when your Tram/Bus will come, and if your going to make it. (also import => examples)
 
 
+#TODO
+https://opentransportdata.swiss/de/cookbook/abfahrts-ankunftsanzeiger/#API_Explorer seems like there is a lot more to access 
+
+https://github.com/andaryjo/trias-client/blob/main/docs/README.md
