@@ -45,6 +45,7 @@ module.exports = function (RED) {
         });
 
         const dbgObj = {
+          ...msg,
             con: this.con, 
             config, 
             requestorref: this.con.requestorref, 

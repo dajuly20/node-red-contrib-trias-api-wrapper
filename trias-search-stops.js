@@ -44,7 +44,7 @@ module.exports = function (RED) {
       this.status({fill,shape:"ring", text: stopsResult.stops.length + " stops found"});
 
 
-      node.send({dbgObj, topic: finalSearchString, payload: stopsResult.stops});
+      node.send({...msg, dbgObj, topic: finalSearchString, payload: stopsResult.stops});
         
       });
     } catch (e) {
