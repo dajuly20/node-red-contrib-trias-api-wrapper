@@ -18,7 +18,6 @@
     });
 
 </script>
-
 <script type="text/html" data-template-name="trias-departures">
     <div class="form-row">
         <label for="node-input-con"><i class="fa fa-tag"></i> TRIAS configuration</label>
@@ -33,6 +32,23 @@
         <input type="text" id="node-input-stoppointref" placeholder="Uses msg.payload if left empty">
 </script>
 
-<script type="text/html" data-help-name="trias-departures">
-    <p>A simple node that converts the message payloads into all lower-case characters</p>
+<script type="text/markdown" data-help-name="trias-departures">
+Connects to a MQTT broker and publishes messages.
+
+### Inputs
+
+: payload (string | buffer) :  the stationID for the request.
+
+### Outputs
+
+1. Standard output
+: payload (array) : array of current leaving times for the requested stationID.
+
+### Details
+
+`msg.payload` can be overridden by the 
+### References
+
+    - https://github.com/public-transport/ideas/issues/18
+    - https://github.com/andaryjo/trias-client
 </script>

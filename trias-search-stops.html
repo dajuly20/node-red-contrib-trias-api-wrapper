@@ -32,30 +32,23 @@
     <input type="text" id="node-input-searchstring" placeholder="Uses msg.payload if left empty" />
   </div>
 </script>
-
-<script type="text/html" data-help-name="search-stops">
-  <p>
-    Node will send it's <code>msg.payload</code> as commands over a
-    
-   
-
-  <h3>Inputs</h3>
-  <dl class="message-properties">
-    <dt class="optional">
-      topic <small>(optional)</small><span class="property-type">numeric</span>
-    </dt>
-    <dd>
-      Overrides the searchstring Pin defined in the node using <b>WiringPi Schema</b
-      ><br />What I use: <code>27</code> <br />
-    </dd>
-    <dt>
-      payload
-      <span class="property-type">string</span>
-    </dt>
-    <dd>
-      
-      Example value: <code>0x20</code> (Source to CD on some Hardware)
-    </dd>
-
- 
-</script>
+<script type="text/markdown" data-help-name="trias-search-stops">
+  Connects to a MQTT broker and publishes messages.
+  
+  ### Inputs
+  
+  : payload (string | buffer) :  the string to search a station.
+  
+  ### Outputs
+  
+  1. Standard output
+  : payload (array) : array of stations matching the seaech.
+  
+  ### Details
+  
+  `msg.payload` can be overridden by the property `searchstring`.
+  ### References
+  
+      - https://github.com/public-transport/ideas/issues/18
+      - https://github.com/andaryjo/trias-client
+  </script>
