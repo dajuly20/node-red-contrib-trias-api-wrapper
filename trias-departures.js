@@ -45,7 +45,7 @@ module.exports = function (RED) {
         });
 
         const dbgObj = {
-          ...msg,
+          
             con: this.con, 
             config, 
             requestorref: this.con.requestorref, 
@@ -57,7 +57,7 @@ module.exports = function (RED) {
         //this.status({fill,shape:"ring", text: stopsResult.stops.length + " stops found"});
   
   
-        node.send({dbgObj, topic: finalStopID, payload: departuresResult});
+        node.send({...msg,dbgObj, topic: finalStopID, payload: departuresResult});
           
         });
       } catch (e) {
