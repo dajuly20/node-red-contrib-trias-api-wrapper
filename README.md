@@ -17,3 +17,5 @@ https://github.com/public-transport/ideas/issues/18 TRIAS Api Endpoints & where 
 https://opentransportdata.swiss/de/cookbook/abfahrts-ankunftsanzeiger/#API_Explorer seems like there is a lot more to access 
 
 https://github.com/andaryjo/trias-client/blob/main/docs/README.md
+
+![Screenshow Flow](images/screenshowFlow.png)
