@@ -19,3 +19,4 @@ https://opentransportdata.swiss/de/cookbook/abfahrts-ankunftsanzeiger/#API_Explo
 https://github.com/andaryjo/trias-client/blob/main/docs/README.md
 
 ![Screenshow Flow](images/screenshowFlow.png)
+![Screenshow Phone](images/screenshow.png)
