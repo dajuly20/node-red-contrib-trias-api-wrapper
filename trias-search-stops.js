@@ -59,13 +59,11 @@ module.exports = function (RED) {
       } catch (e) {
         this.status({fill: "red", shape:"ring", text: e});
         node.error(`Trias `+ e);
-        throw(e);
       }
 
       });
     } catch (e) {
       node.error(`Trias Error: `+ e );
-      throw(e);
     }
   }
 
