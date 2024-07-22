@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-trias-client",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Access live public transport data using trias api. (Requires API-Key)",
   "main": "trias-search-stops.js",
   "dependencies": {
@@ -33,12 +33,16 @@
   },
   "homepage": "https://github.com/dajuly20/node-red-contrib-trias-api-wrapper#readme",
   "node-red": {
+    "version": ">=2.2.0",
     "nodes": {
       "trias-search-stops": "trias-search-stops.js",
       "trias-departures": "trias-departures.js",
       "triasconfig": "triasconfig.js"
       
     }
+  },
+  "engines": {
+    "node": ">=16"
   }
   
 }
