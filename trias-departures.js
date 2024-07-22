@@ -4,64 +4,66 @@ module.exports = function (RED) {
   
     function TriasDepartures(config) {
       try {
-        
         const functions = {};
-  
         module.exports = functions;
         RED.nodes.createNode(this, config);
-  
         this.server = RED.nodes.getNode(config.server);
-        this.warn(config)
         this.con = RED.nodes.getNode(config.con);
-  
-        if(!this.con){
+
+        if (!this.con) {
           this.error("No configuration node found");
-          node.send(null);
           return;
         }
-  
+
         var node = this;
         node.on("input", async function (msg) {
-          const dbg = true;
           const node = this;
           const payload = msg.payload;
-  
-  
-  
-          const finalStopID = msg.payload;//config.searchstring != "" ?  config.searchstring :  msg.payload; 
-  
+          const propStoppointRef = config.stoppointref.replace(/ /g, "");
+          const usedStopPointref =
+            propStoppointRef != "" ? propStoppointRef : msg.payload;
 
-        this.warn("finalStopID: " + finalStopID);
+          try {
+            var client = trias.getClient({
+              url: this.con.endpointuri,
+              requestorRef: this.con.requestorref,
+            });
+
+            var departuresResult = await client.getDepartures({
+              id: usedStopPointref,
+            });
+
+            const departures = departuresResult.departures;
+            const success = departuresResult.success;
+            const debug = msg.debug ? {
+              con: this.con,
+              config,
+              requestorref: this.con.requestorref,
+              endpointuri: this.con.endpointuri,
+              oldPayload: payload,
+            } : null;
 
 
-        var client = trias.getClient({
-            url: this.con.endpointuri,
-            requestorRef: this.con.requestorref
-        });
-        
-        
-        var departuresResult = await client.getDepartures({
-            id: finalStopID
-        });
+            const fill = (departures.length == 0) ? "red" : "green";
+            this.status({fill,shape:"ring", text: departures.length + " departures found" });
 
-        const dbgObj = {
-          
-            con: this.con, 
-            config, 
-            requestorref: this.con.requestorref, 
-            endpointuri: this.con.endpointuri, 
-            oldPayload: payload}
-        
-        
-        //const fill = (stopsResult.stops.length == 0) ? "red" : "green";
-        //this.status({fill,shape:"ring", text: stopsResult.stops.length + " stops found"});
-  
-  
-        node.send({...msg,dbgObj, topic: finalStopID, payload: departuresResult});
+            node.send({
+              ...msg,
+              payload: departures,
+              success,
+              usedStopPointref,
+              debug,
+              
+            });
+
+          } catch (e) {
+            this.status({fill: "red", shape:"ring", text: e});
+            node.error(`Trias `+ e);
+          }
           
         });
       } catch (e) {
-        node.error(`Errorrrrr!!!:}`, e);
+        node.error(`Trias Error: `+ e );
       }
     }
   
