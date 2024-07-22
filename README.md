@@ -4,22 +4,23 @@
 > retrieve Data from a Trias API endpoint.
 > *API **Endpoint** and API-**KEY** required! (see below)*  
 
-  
+* Fulltext search for `Station ID`  `s   
 
-* Access live departure times for any given station within the system using the TRIAS API of given endpint.
+* Retrieve live data for station using it's unique `Station ID`  (e.g. departure times for Bus / Tram)
 
-* Wraps https://github.com/andaryjo/trias-client 
-
-* Including a 'will I catch my tram' dashboard (import => [examples](./examples/dashboard.json))
-
-* Including a worklow to ask Alexa when your Tram/Bus will come, and if you're going to make it. (import => [examples](./examples/alexaWannKommtDieTram.json))
-
-  
 
 ## Reference:
 
 * [TRIAS API Endpoints & where to ask for API KEY](https://github.com/public-transport/ideas/issues/18)
 * https://github.com/andaryjo/trias-client/blob/main/docs/README.md
+
+## Examples
+
+* Will I catch my tram dashboard (import => [examples](./examples/dashboard.json))
+
+* Alexa, will I catch my tram flow?  (import => [examples](./examples/alexaWannKommtDieTram.json))
+
+
 
 ## Screenshots:   
 
